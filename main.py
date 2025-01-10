@@ -5,8 +5,8 @@ import time
 import os
 TELEGRAM_TOKEN = os.getenv("API_TOKEN")
 CHAT_ID = os.getenv("CHANNEL_ID")
+TELEGRAM_CHANNEL_URL = os.getenv("TELEGRAM_CHANNEL_URL")
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
-TELEGRAM_CHANNEL_URL = 'https://t.me/s/fgtestfg'
 KEYWORDS = "фонтан музыкальный открытие"
 
 def clean_url(url):
