@@ -65,7 +65,7 @@ def main():
    logging.info(f'Найдено {len(news_items)} новостей.')
    for news in news_items:
        if news['link'] not in known_links and is_link_working(news['link']):  # Если ссылка новая и рабочая
-           message = f'<b>{news["title"]}</b>\n{news["link"]}'
+           message = f'<b>{news["title"]}</b>\n{news["link"]}\n⛲@MonitoringFontan📰#MonitoringFontan'
            response = send_telegram_message(message)
            if response.get('ok'):
                logging.info(f'Отправлено: {news["title"]}')
