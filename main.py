@@ -45,23 +45,19 @@ def search_news():
     query = f'https://www.google.ru/search?q={KEYWORDS}&hl=ru'  # Поиск за последний день
     response = requests.get(query)
     response.raise_for_status()
-    
     soup = BeautifulSoup(response.text, 'html.parser')
     news = []
-
     # Найдем заголовки новостей и ссылки
     for item in soup.find_all('h3'):
         title = item.get_text()
         link = item.find_parent('a')['href']
         cleaned_link = clean_url(link)
-        
         # Проверяем, что ссылка рабочая
         try:
             if requests.head(cleaned_link).status_code == 200:
                 news.append({'title': title, 'link': cleaned_link})
         except requests.exceptions.RequestException:
             logging.warning(f"Некорректная ссылка: {cleaned_link}")
-
     logging.debug(f"Найдено новостей: {len(news)}")
     return news
 
@@ -85,31 +81,24 @@ def send_message(text):
 def send_random_news():
     """Отправляет одну случайную новость в канал."""
     news = search_news()
-    
     # Загружаем уже отправленные новости
     sent_news = load_sent_news()
     sent_titles = {item['title'] for item in sent_news}  # Используем множество для более быстрой проверки
-
     # Фильтруем новости по заголовкам, запрещенным словам и сайтам
     filtered_news = []
     for item in news:
         title = item['title']
         link = item['link']
         site = link.split('/')[2]  # Извлекаем домен из ссылки
-
         # Проверяем на наличие запрещенных слов и сайтов
-
         if title not in sent_titles and not any(word in title.lower() for word in IGNORE_WORDS) and not any(site in link for site in IGNORE_SITES):
             filtered_news.append(item)
-
     if filtered_news:
         random_news = random.choice(filtered_news)
         title = random_news['title']
         link = random_news['link']
-        
         # Формируем текст сообщения с хештегами
         message_text = f"{title}\n{link}\n ⛲@MonitoringFontan 📰#MonitoringFontan"
-
         # Отправка сообщения
         if send_message(message_text):
             # Сохраняем отправленную новость
@@ -133,7 +122,5 @@ if __name__ == '__main__':
     while True:
         send_random_news()  # Отправляем новости
         num_iterations += 1
-
         cleanup_sent_news(num_iterations)  # Очищаем старые записи при необходимости
-
         time.sleep(800)  # Пауза перед следующим запросом (5 минут)
